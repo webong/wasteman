@@ -2,32 +2,32 @@
 
 namespace App\Http\Controllers;
 
-use App\Contact;
+use App\Invoice;
 use Inertia\Inertia;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Redirect;
 
-class ContactsController extends Controller
+class InvoicesController extends Controller
 {
     public function index()
     {
-        return Inertia::render('Contacts/Index', [
+        return Inertia::render('Invoices/Index', [
             'filters' => Request::all('search', 'trashed'),
-            'contacts' => Auth::user()->account->contacts()
+            'invoices' => Auth::user()->account->invoices()
                 ->with('organization')
                 ->orderByName()
                 ->filter(Request::only('search', 'trashed'))
                 ->paginate()
-                ->transform(function ($contact) {
+                ->transform(function ($invoice) {
                     return [
-                        'id' => $contact->id,
-                        'name' => $contact->name,
-                        'phone' => $contact->phone,
-                        'city' => $contact->city,
-                        'deleted_at' => $contact->deleted_at,
-                        'organization' => $contact->organization ? $contact->organization->only('name') : null,
+                        'id' => $invoice->id,
+                        'name' => $invoice->name,
+                        'phone' => $invoice->phone,
+                        'city' => $invoice->city,
+                        'deleted_at' => $invoice->deleted_at,
+                        'organization' => $invoice->organization ? $invoice->organization->only('name') : null,
                     ];
                 }),
         ]);
@@ -35,7 +35,7 @@ class ContactsController extends Controller
 
     public function create()
     {
-        return Inertia::render('Contacts/Create', [
+        return Inertia::render('Invoices/Create', [
             'organizations' => Auth::user()->account
                 ->organizations()
                 ->orderBy('name')
@@ -47,7 +47,7 @@ class ContactsController extends Controller
 
     public function store()
     {
-        Auth::user()->account->contacts()->create(
+        Auth::user()->account->invoices()->create(
             Request::validate([
                 'first_name' => ['required', 'max:50'],
                 'last_name' => ['required', 'max:50'],
@@ -64,25 +64,25 @@ class ContactsController extends Controller
             ])
         );
 
-        return Redirect::route('contacts')->with('success', 'Contact created.');
+        return Redirect::route('invoices')->with('success', 'Invoice created.');
     }
 
-    public function edit(Contact $contact)
+    public function edit(Invoice $invoice)
     {
-        return Inertia::render('Contacts/Edit', [
-            'contact' => [
-                'id' => $contact->id,
-                'first_name' => $contact->first_name,
-                'last_name' => $contact->last_name,
-                'organization_id' => $contact->organization_id,
-                'email' => $contact->email,
-                'phone' => $contact->phone,
-                'address' => $contact->address,
-                'city' => $contact->city,
-                'region' => $contact->region,
-                'country' => $contact->country,
-                'postal_code' => $contact->postal_code,
-                'deleted_at' => $contact->deleted_at,
+        return Inertia::render('Invoices/Edit', [
+            'invoice' => [
+                'id' => $invoice->id,
+                'first_name' => $invoice->first_name,
+                'last_name' => $invoice->last_name,
+                'organization_id' => $invoice->organization_id,
+                'email' => $invoice->email,
+                'phone' => $invoice->phone,
+                'address' => $invoice->address,
+                'city' => $invoice->city,
+                'region' => $invoice->region,
+                'country' => $invoice->country,
+                'postal_code' => $invoice->postal_code,
+                'deleted_at' => $invoice->deleted_at,
             ],
             'organizations' => Auth::user()->account->organizations()
                 ->orderBy('name')
@@ -92,9 +92,9 @@ class ContactsController extends Controller
         ]);
     }
 
-    public function update(Contact $contact)
+    public function update(Invoice $invoice)
     {
-        $contact->update(
+        $invoice->update(
             Request::validate([
                 'first_name' => ['required', 'max:50'],
                 'last_name' => ['required', 'max:50'],
@@ -111,20 +111,20 @@ class ContactsController extends Controller
             ])
         );
 
-        return Redirect::back()->with('success', 'Contact updated.');
+        return Redirect::back()->with('success', 'Invoice updated.');
     }
 
-    public function destroy(Contact $contact)
+    public function destroy(Invoice $invoice)
     {
-        $contact->delete();
+        $invoice->delete();
 
-        return Redirect::back()->with('success', 'Contact deleted.');
+        return Redirect::back()->with('success', 'Invoice deleted.');
     }
 
-    public function restore(Contact $contact)
+    public function restore(Invoice $invoice)
     {
-        $contact->restore();
+        $invoice->restore();
 
-        return Redirect::back()->with('success', 'Contact restored.');
+        return Redirect::back()->with('success', 'Invoice restored.');
     }
 }

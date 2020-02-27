@@ -4,14 +4,14 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateContactsTable extends Migration
+class CreateInvoicesTable extends Migration
 {
     public function up()
     {
-        Schema::create('contacts', function (Blueprint $table) {
+        Schema::create('invoices', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('account_id')->index();
-            $table->integer('organization_id')->nullable()->index();
+            $table->integer('customer_id')->nullable()->index();
             $table->string('first_name', 25);
             $table->string('last_name', 25);
             $table->string('email', 50)->nullable();

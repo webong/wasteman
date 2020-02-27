@@ -4,13 +4,13 @@ namespace App;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Contact extends Model
+class Invoice extends Model
 {
     use SoftDeletes;
 
-    public function organization()
+    public function customer()
     {
-        return $this->belongsTo(Organization::class);
+        return $this->belongsTo(Customer::class);
     }
 
     public function getNameAttribute()
@@ -30,7 +30,7 @@ class Contact extends Model
                 $query->where('first_name', 'like', '%'.$search.'%')
                     ->orWhere('last_name', 'like', '%'.$search.'%')
                     ->orWhere('email', 'like', '%'.$search.'%')
-                    ->orWhereHas('organization', function ($query) use ($search) {
+                    ->orWhereHas('customer', function ($query) use ($search) {
                         $query->where('name', 'like', '%'.$search.'%');
                     });
             });

@@ -21,7 +21,8 @@
         "nunomaduro/collision": "^3.0",
         "phpunit/phpunit": "^8.0",
         "reinink/remember-query-strings": "^0.1.0",
-        "tightenco/ziggy": "^0.8.0"
+        "tightenco/ziggy": "^0.8.0",
+        "xeviant/laravel-paystack": "^1.5"
     },
     "autoload": {
         "classmap": [
