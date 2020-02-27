@@ -1,7 +1,7 @@
 <template>
   <div>
     <h1 class="mb-8 font-bold text-3xl">
-      <inertia-link class="text-indigo-400 hover:text-indigo-600" :href="route('organizations')">Organizations</inertia-link>
+      <inertia-link class="text-indigo-400 hover:text-indigo-600" :href="route('customers')">Customers</inertia-link>
       <span class="text-indigo-400 font-medium">/</span> Create
     </h1>
     <div class="bg-white rounded shadow overflow-hidden max-w-3xl">
@@ -21,7 +21,7 @@
           <text-input v-model="form.postal_code" :errors="$page.errors.postal_code" class="pr-6 pb-8 w-full lg:w-1/2" label="Postal code" />
         </div>
         <div class="px-8 py-4 bg-gray-100 border-t border-gray-200 flex justify-end items-center">
-          <loading-button :loading="sending" class="btn-indigo" type="submit">Create Organization</loading-button>
+          <loading-button :loading="sending" class="btn-indigo" type="submit">Create Customer</loading-button>
         </div>
       </form>
     </div>
@@ -35,7 +35,7 @@ import SelectInput from '@/Shared/SelectInput'
 import TextInput from '@/Shared/TextInput'
 
 export default {
-  metaInfo: { title: 'Create Organization' },
+  metaInfo: { title: 'Create Customer' },
   layout: Layout,
   components: {
     LoadingButton,
@@ -61,7 +61,7 @@ export default {
   methods: {
     submit() {
       this.sending = true
-      this.$inertia.post(this.route('organizations.store'), this.form)
+      this.$inertia.post(this.route('customers.store'), this.form)
         .then(() => this.sending = false)
     },
   },

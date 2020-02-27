@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1 class="mb-8 font-bold text-3xl">Contacts</h1>
+    <h1 class="mb-8 font-bold text-3xl">Invoices</h1>
     <div class="mb-6 flex justify-between items-center">
       <search-filter v-model="form.search" class="w-full max-w-md mr-4" @reset="reset">
         <label class="block text-gray-700">Trashed:</label>
@@ -10,55 +10,55 @@
           <option value="only">Only Trashed</option>
         </select>
       </search-filter>
-      <inertia-link class="btn-indigo" :href="route('contacts.create')">
+      <inertia-link class="btn-indigo" :href="route('invoices.create')">
         <span>Create</span>
-        <span class="hidden md:inline">Contact</span>
+        <span class="hidden md:inline">Invoice</span>
       </inertia-link>
     </div>
     <div class="bg-white rounded shadow overflow-x-auto">
       <table class="w-full whitespace-no-wrap">
         <tr class="text-left font-bold">
           <th class="px-6 pt-6 pb-4">Name</th>
-          <th class="px-6 pt-6 pb-4">Organization</th>
+          <th class="px-6 pt-6 pb-4">Customer</th>
           <th class="px-6 pt-6 pb-4">City</th>
           <th class="px-6 pt-6 pb-4" colspan="2">Phone</th>
         </tr>
-        <tr v-for="contact in contacts.data" :key="contact.id" class="hover:bg-gray-100 focus-within:bg-gray-100">
+        <tr v-for="invoice in invoices.data" :key="invoice.id" class="hover:bg-gray-100 focus-within:bg-gray-100">
           <td class="border-t">
-            <inertia-link class="px-6 py-4 flex items-center focus:text-indigo-500" :href="route('contacts.edit', contact.id)">
-              {{ contact.name }}
-              <icon v-if="contact.deleted_at" name="trash" class="flex-shrink-0 w-3 h-3 fill-gray-400 ml-2" />
+            <inertia-link class="px-6 py-4 flex items-center focus:text-indigo-500" :href="route('invoices.edit', invoice.id)">
+              {{ invoice.name }}
+              <icon v-if="invoice.deleted_at" name="trash" class="flex-shrink-0 w-3 h-3 fill-gray-400 ml-2" />
             </inertia-link>
           </td>
           <td class="border-t">
-            <inertia-link class="px-6 py-4 flex items-center" :href="route('contacts.edit', contact.id)" tabindex="-1">
-              <div v-if="contact.organization">
-                {{ contact.organization.name }}
+            <inertia-link class="px-6 py-4 flex items-center" :href="route('invoices.edit', invoice.id)" tabindex="-1">
+              <div v-if="invoice.customer">
+                {{ invoice.customer.name }}
               </div>
             </inertia-link>
           </td>
           <td class="border-t">
-            <inertia-link class="px-6 py-4 flex items-center" :href="route('contacts.edit', contact.id)" tabindex="-1">
-              {{ contact.city }}
+            <inertia-link class="px-6 py-4 flex items-center" :href="route('invoices.edit', invoice.id)" tabindex="-1">
+              {{ invoice.city }}
             </inertia-link>
           </td>
           <td class="border-t">
-            <inertia-link class="px-6 py-4 flex items-center" :href="route('contacts.edit', contact.id)" tabindex="-1">
-              {{ contact.phone }}
+            <inertia-link class="px-6 py-4 flex items-center" :href="route('invoices.edit', invoice.id)" tabindex="-1">
+              {{ invoice.phone }}
             </inertia-link>
           </td>
           <td class="border-t w-px">
-            <inertia-link class="px-4 flex items-center" :href="route('contacts.edit', contact.id)" tabindex="-1">
+            <inertia-link class="px-4 flex items-center" :href="route('invoices.edit', invoice.id)" tabindex="-1">
               <icon name="cheveron-right" class="block w-6 h-6 fill-gray-400" />
             </inertia-link>
           </td>
         </tr>
-        <tr v-if="contacts.data.length === 0">
-          <td class="border-t px-6 py-4" colspan="4">No contacts found.</td>
+        <tr v-if="invoices.data.length === 0">
+          <td class="border-t px-6 py-4" colspan="4">No invoices found.</td>
         </tr>
       </table>
     </div>
-    <pagination :links="contacts.links" />
+    <pagination :links="invoices.links" />
   </div>
 </template>
 
@@ -72,7 +72,7 @@ import SearchFilter from '@/Shared/SearchFilter'
 import throttle from 'lodash/throttle'
 
 export default {
-  metaInfo: { title: 'Contacts' },
+  metaInfo: { title: 'Invoices' },
   layout: Layout,
   components: {
     Icon,
@@ -80,7 +80,7 @@ export default {
     SearchFilter,
   },
   props: {
-    contacts: Object,
+    invoices: Object,
     filters: Object,
   },
   data() {
@@ -95,7 +95,7 @@ export default {
     form: {
       handler: throttle(function() {
         let query = pickBy(this.form)
-        this.$inertia.replace(this.route('contacts', Object.keys(query).length ? query : { remember: 'forget' }))
+        this.$inertia.replace(this.route('invoices', Object.keys(query).length ? query : { remember: 'forget' }))
       }, 150),
       deep: true,
     },

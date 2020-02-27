@@ -1,7 +1,7 @@
 <template>
   <div>
     <h1 class="mb-8 font-bold text-3xl">
-      <inertia-link class="text-indigo-400 hover:text-indigo-600" :href="route('contacts')">Contacts</inertia-link>
+      <inertia-link class="text-indigo-400 hover:text-indigo-600" :href="route('invoices')">Invoices</inertia-link>
       <span class="text-indigo-400 font-medium">/</span> Create
     </h1>
     <div class="bg-white rounded shadow overflow-hidden max-w-3xl">
@@ -9,9 +9,9 @@
         <div class="p-8 -mr-6 -mb-8 flex flex-wrap">
           <text-input v-model="form.first_name" :errors="$page.errors.first_name" class="pr-6 pb-8 w-full lg:w-1/2" label="First name" />
           <text-input v-model="form.last_name" :errors="$page.errors.last_name" class="pr-6 pb-8 w-full lg:w-1/2" label="Last name" />
-          <select-input v-model="form.organization_id" :errors="$page.errors.organization_id" class="pr-6 pb-8 w-full lg:w-1/2" label="Organization">
+          <select-input v-model="form.customer_id" :errors="$page.errors.customer_id" class="pr-6 pb-8 w-full lg:w-1/2" label="Customer">
             <option :value="null" />
-            <option v-for="organization in organizations" :key="organization.id" :value="organization.id">{{ organization.name }}</option>
+            <option v-for="customer in customers" :key="customer.id" :value="customer.id">{{ customer.name }}</option>
           </select-input>
           <text-input v-model="form.email" :errors="$page.errors.email" class="pr-6 pb-8 w-full lg:w-1/2" label="Email" />
           <text-input v-model="form.phone" :errors="$page.errors.phone" class="pr-6 pb-8 w-full lg:w-1/2" label="Phone" />
@@ -26,7 +26,7 @@
           <text-input v-model="form.postal_code" :errors="$page.errors.postal_code" class="pr-6 pb-8 w-full lg:w-1/2" label="Postal code" />
         </div>
         <div class="px-8 py-4 bg-gray-100 border-t border-gray-200 flex justify-end items-center">
-          <loading-button :loading="sending" class="btn-indigo" type="submit">Create Contact</loading-button>
+          <loading-button :loading="sending" class="btn-indigo" type="submit">Create Invoice</loading-button>
         </div>
       </form>
     </div>
@@ -40,7 +40,7 @@ import SelectInput from '@/Shared/SelectInput'
 import TextInput from '@/Shared/TextInput'
 
 export default {
-  metaInfo: { title: 'Create Contact' },
+  metaInfo: { title: 'Create Invoice' },
   layout: Layout,
   components: {
     LoadingButton,
@@ -48,7 +48,7 @@ export default {
     TextInput,
   },
   props: {
-    organizations: Array,
+    customers: Array,
   },
   remember: 'form',
   data() {
@@ -57,7 +57,7 @@ export default {
       form: {
         first_name: null,
         last_name: null,
-        organization_id: null,
+        customer_id: null,
         email: null,
         phone: null,
         address: null,
@@ -71,7 +71,7 @@ export default {
   methods: {
     submit() {
       this.sending = true
-      this.$inertia.post(this.route('contacts.store'), this.form)
+      this.$inertia.post(this.route('invoices.store'), this.form)
         .then(() => this.sending = false)
     },
   },

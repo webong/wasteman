@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -49,15 +51,3 @@ Route::put('invoices/{contact}')->name('invoices.update')->uses('InvoicesControl
 Route::delete('invoices/{contact}')->name('invoices.destroy')->uses('InvoicesController@destroy')->middleware('auth');
 Route::put('invoices/{contact}/restore')->name('invoices.restore')->uses('InvoicesController@restore')->middleware('auth');
 
-// Reports
-Route::get('reports')->name('reports')->uses('ReportsController')->middleware('auth');
-
-// 500 error
-Route::get('500', function () {
-    // Force debug mode for this endpoint in the demo environment
-    if (App::environment('demo')) {
-        Config::set('app.debug', true);
-    }
-
-    echo $fail;
-});
