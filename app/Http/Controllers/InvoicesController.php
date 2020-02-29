@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Customer;
 use App\Invoice;
-use Inertia\Inertia;
-use Illuminate\Validation\Rule;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Request;
+use Illuminate\Validation\Rule;
+use Inertia\Inertia;
 
 class InvoicesController extends Controller
 {
@@ -16,18 +18,18 @@ class InvoicesController extends Controller
         return Inertia::render('Invoices/Index', [
             'filters' => Request::all('search', 'trashed'),
             'invoices' => Auth::user()->account->invoices()
-                ->with('organization')
+                ->with('customer')
                 ->orderByName()
                 ->filter(Request::only('search', 'trashed'))
                 ->paginate()
                 ->transform(function ($invoice) {
                     return [
                         'id' => $invoice->id,
-                        'name' => $invoice->name,
-                        'phone' => $invoice->phone,
-                        'city' => $invoice->city,
+                        'customer' => $invoice->customer ? $invoice->customer->only('name') : null,
+                        'paystack_invoice_id' => $invoice->paystack_invoice_id,
+                        'due_date' => Carbon::parse($invoice->due_date)->diffForHumans(),
+                        'amount' => $invoice->amount,
                         'deleted_at' => $invoice->deleted_at,
-                        'organization' => $invoice->organization ? $invoice->organization->only('name') : null,
                     ];
                 }),
         ]);
@@ -36,8 +38,8 @@ class InvoicesController extends Controller
     public function create()
     {
         return Inertia::render('Invoices/Create', [
-            'organizations' => Auth::user()->account
-                ->organizations()
+            'customers' => Auth::user()->account
+                ->customers()
                 ->orderBy('name')
                 ->get()
                 ->map
@@ -47,21 +49,34 @@ class InvoicesController extends Controller
 
     public function store()
     {
+        $invoiceRequest = Request::validate([
+            'amount' => ['required', 'numeric'],
+            'currency' => ['required'],
+            'due_date' => ['required', 'date', 'after_or_equal:today'],
+            'description' => ['nullable', 'max:250'],
+            'customer_id' => ['required', Rule::exists('customers', 'id')->where(function ($query) {
+                $query->where('account_id', Auth::user()->account_id);
+            })],
+        ]);
+
+        $customer = Customer::findorFail($invoiceRequest['customer_id']);
+
+        $paystack = app()->make('paystack.connection');
+
+        $paystackResponse = $paystack->invoices()->create([
+            'customer' => $customer->paystack_customer_code,
+            'amount' => intval($invoiceRequest['amount'] * 100),
+            'description' => $invoiceRequest['description'],
+            'due_date' => Carbon::parse($invoiceRequest['due_date'])->toIso8601String(),
+        ]);
+        
+        $invoiceRequest['paid'] = $paystackResponse['paid'];
+        $invoiceRequest['status'] = $paystackResponse['status'];
+        $invoiceRequest['paystack_invoice_id'] = $paystackResponse['id'];
+        $invoiceRequest['paystack_invoice_code'] = $paystackResponse['request_code'];
+
         Auth::user()->account->invoices()->create(
-            Request::validate([
-                'first_name' => ['required', 'max:50'],
-                'last_name' => ['required', 'max:50'],
-                'organization_id' => ['nullable', Rule::exists('organizations', 'id')->where(function ($query) {
-                    $query->where('account_id', Auth::user()->account_id);
-                })],
-                'email' => ['nullable', 'max:50', 'email'],
-                'phone' => ['nullable', 'max:50'],
-                'address' => ['nullable', 'max:150'],
-                'city' => ['nullable', 'max:50'],
-                'region' => ['nullable', 'max:50'],
-                'country' => ['nullable', 'max:2'],
-                'postal_code' => ['nullable', 'max:25'],
-            ])
+            $invoiceRequest
         );
 
         return Redirect::route('invoices')->with('success', 'Invoice created.');
@@ -72,19 +87,16 @@ class InvoicesController extends Controller
         return Inertia::render('Invoices/Edit', [
             'invoice' => [
                 'id' => $invoice->id,
-                'first_name' => $invoice->first_name,
-                'last_name' => $invoice->last_name,
-                'organization_id' => $invoice->organization_id,
-                'email' => $invoice->email,
-                'phone' => $invoice->phone,
-                'address' => $invoice->address,
-                'city' => $invoice->city,
-                'region' => $invoice->region,
-                'country' => $invoice->country,
-                'postal_code' => $invoice->postal_code,
+                'due_date' => $invoice->due_date,
+                'amount' => $invoice->amount,
+                'description' => $invoice->description,
+                'currency' => $invoice->currency,
+                'paystack_invoice_id' => $invoice->paystack_invoice_id ?? 509384,
+                'customer_id' => $invoice->customer_id,
+                'customer_name' => $invoice->customer->name,
                 'deleted_at' => $invoice->deleted_at,
             ],
-            'organizations' => Auth::user()->account->organizations()
+            'customers' => Auth::user()->account->customers()
                 ->orderBy('name')
                 ->get()
                 ->map
@@ -96,18 +108,13 @@ class InvoicesController extends Controller
     {
         $invoice->update(
             Request::validate([
-                'first_name' => ['required', 'max:50'],
-                'last_name' => ['required', 'max:50'],
-                'organization_id' => ['nullable', Rule::exists('organizations', 'id')->where(function ($query) {
+                'amount' => ['required', 'numeric'],
+                'currency' => ['required'],
+                'due_date' => ['required', 'date', 'after_or_equal:today'],
+                'description' => ['nullable', 'max:250'],
+                'customer_id' => ['required', Rule::exists('customers', 'id')->where(function ($query) {
                     $query->where('account_id', Auth::user()->account_id);
                 })],
-                'email' => ['nullable', 'max:50', 'email'],
-                'phone' => ['nullable', 'max:50'],
-                'address' => ['nullable', 'max:150'],
-                'city' => ['nullable', 'max:50'],
-                'region' => ['nullable', 'max:50'],
-                'country' => ['nullable', 'max:2'],
-                'postal_code' => ['nullable', 'max:25'],
             ])
         );
 

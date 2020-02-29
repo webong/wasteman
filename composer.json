@@ -1,7 +1,10 @@
 {
     "name": "laravel/laravel",
     "description": "The Laravel Framework.",
-    "keywords": ["framework", "laravel"],
+    "keywords": [
+        "framework",
+        "laravel"
+    ],
     "license": "MIT",
     "type": "project",
     "require": {
@@ -21,9 +24,20 @@
         "nunomaduro/collision": "^3.0",
         "phpunit/phpunit": "^8.0",
         "reinink/remember-query-strings": "^0.1.0",
+        "snowfire/beautymail": "dev-master",
         "tightenco/ziggy": "^0.8.0",
-        "xeviant/laravel-paystack": "^1.5"
+        "xeviant/laravel-paystack": "dev-master"
     },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/webong/Beautymail"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/webong/lpaystack"
+        }
+    ],
     "autoload": {
         "classmap": [
             "database/seeds",
@@ -40,8 +54,7 @@
     },
     "extra": {
         "laravel": {
-            "dont-discover": [
-            ]
+            "dont-discover": []
         }
     },
     "scripts": {

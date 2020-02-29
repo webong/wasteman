@@ -3,7 +3,7 @@
     <h1 class="mb-8 font-bold text-3xl">
       <inertia-link class="text-indigo-400 hover:text-indigo-600" :href="route('invoices')">Invoices</inertia-link>
       <span class="text-indigo-400 font-medium">/</span>
-      {{ form.first_name }} {{ form.last_name }}
+      {{ invoice.invoice_id }}
     </h1>
     <trashed-message v-if="invoice.deleted_at" class="mb-6" @restore="restore">
       This invoice has been deleted.
@@ -11,7 +11,18 @@
     <div class="bg-white rounded shadow overflow-hidden max-w-3xl">
       <form @submit.prevent="submit">
         <div class="p-8 -mr-6 -mb-8 flex flex-wrap">
-          <text-input v-model="form.first_name" :errors="$page.errors.first_name" class="pr-6 pb-8 w-full lg:w-1/2" label="First name" />
+          <text-input v-model="form.amount" type="number" :errors="$page.errors.amount" class="pr-6 pb-8 w-full lg:w-1/2" label="Amount" />
+          <select-input v-model="form.currency" :errors="$page.errors.currency" class="pr-6 pb-8 w-full lg:w-1/2" label="Currency">
+            <option :value="null" />
+            <option value="NGN">Naira</option>
+          </select-input>
+          <select-input v-model="form.customer_id" :errors="$page.errors.customer_id" class="pr-6 pb-8 w-full lg:w-1/2" label="Customer">
+            <option :value="null" />
+            <option v-for="customer in customers" :key="customer.id" :value="customer.id">{{ customer.name }}</option>
+          </select-input>
+          <text-input v-model="form.due_date" type="date" :errors="$page.errors.due_date" class="pr-6 pb-8 w-full lg:w-1/2" label="Due Date" />
+          <textarea-input v-model="form.description" :errors="$page.errors.description" class="pr-6 pb-8 w-full" label="Description" />
+          <!-- <text-input v-model="form.first_name" :errors="$page.errors.first_name" class="pr-6 pb-8 w-full lg:w-1/2" label="First name" />
           <text-input v-model="form.last_name" :errors="$page.errors.last_name" class="pr-6 pb-8 w-full lg:w-1/2" label="Last name" />
           <select-input v-model="form.customer_id" :errors="$page.errors.customer_id" class="pr-6 pb-8 w-full lg:w-1/2" label="Customer">
             <option :value="null" />
@@ -27,7 +38,7 @@
             <option value="CA">Canada</option>
             <option value="US">United States</option>
           </select-input>
-          <text-input v-model="form.postal_code" :errors="$page.errors.postal_code" class="pr-6 pb-8 w-full lg:w-1/2" label="Postal code" />
+          <text-input v-model="form.postal_code" :errors="$page.errors.postal_code" class="pr-6 pb-8 w-full lg:w-1/2" label="Postal code" /> -->
         </div>
         <div class="px-8 py-4 bg-gray-100 border-t border-gray-200 flex items-center">
           <button v-if="!invoice.deleted_at" class="text-red-600 hover:underline" tabindex="-1" type="button" @click="destroy">Delete Invoice</button>
@@ -43,12 +54,13 @@ import Layout from '@/Shared/Layout'
 import LoadingButton from '@/Shared/LoadingButton'
 import SelectInput from '@/Shared/SelectInput'
 import TextInput from '@/Shared/TextInput'
+import TextareaInput from '@/Shared/TextareaInput'
 import TrashedMessage from '@/Shared/TrashedMessage'
 
 export default {
   metaInfo() {
     return {
-      title: `${this.form.first_name} ${this.form.last_name}`,
+      title: `Invoice ${this.invoice.invoice_id} for ${this.invoice.customer_name}`,
     }
   },
   layout: Layout,
@@ -56,6 +68,7 @@ export default {
     LoadingButton,
     SelectInput,
     TextInput,
+    TextareaInput,
     TrashedMessage,
   },
   props: {
@@ -67,16 +80,11 @@ export default {
     return {
       sending: false,
       form: {
-        first_name: this.invoice.first_name,
-        last_name: this.invoice.last_name,
+        description: this.invoice.description,
+        amount: this.invoice.amount,
         customer_id: this.invoice.customer_id,
-        email: this.invoice.email,
-        phone: this.invoice.phone,
-        address: this.invoice.address,
-        city: this.invoice.city,
-        region: this.invoice.region,
-        country: this.invoice.country,
-        postal_code: this.invoice.postal_code,
+        currency: this.invoice.currency,
+        due_date: this.invoice.due_date,
       },
     }
   },

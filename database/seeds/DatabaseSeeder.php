@@ -22,13 +22,13 @@ class DatabaseSeeder extends Seeder
 
         factory(User::class, 5)->create(['account_id' => $account->id]);
 
-        $customers = factory(Customer::class, 100)
-            ->create(['account_id' => $account->id]);
+        // $customers = factory(Customer::class, 100)
+        //     ->create(['account_id' => $account->id]);
 
-        factory(Invoice::class, 100)
-            ->create(['account_id' => $account->id])
-            ->each(function ($invoice) use ($customers) {
-                $invoice->update(['customer_id' => $customers->random()->id]);
-            });
+        // factory(Invoice::class, 100)
+        //     ->create(['account_id' => $account->id])
+        //     ->each(function ($invoice) use ($customers) {
+        //         $invoice->update(['customer_id' => $customers->random()->id]);
+        //     });
     }
 }

@@ -37,17 +37,17 @@ Route::get('/img/{path}', 'ImagesController@show')->where('path', '.*');
 Route::get('customers')->name('customers')->uses('CustomersController@index')->middleware('remember', 'auth');
 Route::get('customers/create')->name('customers.create')->uses('CustomersController@create')->middleware('auth');
 Route::post('customers')->name('customers.store')->uses('CustomersController@store')->middleware('auth');
-Route::get('customers/{organization}/edit')->name('customers.edit')->uses('CustomersController@edit')->middleware('auth');
-Route::put('customers/{organization}')->name('customers.update')->uses('CustomersController@update')->middleware('auth');
-Route::delete('customers/{organization}')->name('customers.destroy')->uses('CustomersController@destroy')->middleware('auth');
-Route::put('customers/{organization}/restore')->name('customers.restore')->uses('CustomersController@restore')->middleware('auth');
+Route::get('customers/{customer}/edit')->name('customers.edit')->uses('CustomersController@edit')->middleware('auth');
+Route::put('customers/{customer}')->name('customers.update')->uses('CustomersController@update')->middleware('auth');
+Route::delete('customers/{customer}')->name('customers.destroy')->uses('CustomersController@destroy')->middleware('auth');
+Route::put('customers/{customer}/restore')->name('customers.restore')->uses('CustomersController@restore')->middleware('auth');
 
 // Invoices
 Route::get('invoices')->name('invoices')->uses('InvoicesController@index')->middleware('remember', 'auth');
 Route::get('invoices/create')->name('invoices.create')->uses('InvoicesController@create')->middleware('auth');
 Route::post('invoices')->name('invoices.store')->uses('InvoicesController@store')->middleware('auth');
-Route::get('invoices/{contact}/edit')->name('invoices.edit')->uses('InvoicesController@edit')->middleware('auth');
-Route::put('invoices/{contact}')->name('invoices.update')->uses('InvoicesController@update')->middleware('auth');
-Route::delete('invoices/{contact}')->name('invoices.destroy')->uses('InvoicesController@destroy')->middleware('auth');
-Route::put('invoices/{contact}/restore')->name('invoices.restore')->uses('InvoicesController@restore')->middleware('auth');
+Route::get('invoices/{invoice}/edit')->name('invoices.edit')->uses('InvoicesController@edit')->middleware('auth');
+Route::put('invoices/{invoice}')->name('invoices.update')->uses('InvoicesController@update')->middleware('auth');
+Route::delete('invoices/{invoice}')->name('invoices.destroy')->uses('InvoicesController@destroy')->middleware('auth');
+Route::put('invoices/{invoice}/restore')->name('invoices.restore')->uses('InvoicesController@restore')->middleware('auth');
 

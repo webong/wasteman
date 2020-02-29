@@ -7,6 +7,7 @@ use App\Customer;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Redirect;
+use Xeviant\LaravelPaystack\Paystack;
 
 class CustomersController extends Controller
 {
@@ -27,30 +28,41 @@ class CustomersController extends Controller
         return Inertia::render('Customers/Create');
     }
 
-    public function store()
+    public function store(Paystack $paystack)
     {
-        Auth::user()->account->customers()->create(
-            Request::validate([
-                'name' => ['required', 'max:100'],
-                'email' => ['nullable', 'max:50', 'email'],
-                'phone' => ['nullable', 'max:50'],
-                'address' => ['nullable', 'max:150'],
-                'city' => ['nullable', 'max:50'],
-                'region' => ['nullable', 'max:50'],
-                'country' => ['nullable', 'max:2'],
-                'postal_code' => ['nullable', 'max:25'],
-            ])
+       $customerRequest = Request::validate([
+            'first_name' => ['required', 'max:50'],
+            'last_name' => ['required', 'max:50'],
+            'email' => ['nullable', 'max:50', 'email'],
+            'phone' => ['nullable', 'max:50'],
+            'address' => ['nullable', 'max:150'],
+            'city' => ['nullable', 'max:50'],
+            'region' => ['nullable', 'max:50'],
+            'country' => ['nullable', 'max:2'],
+            'postal_code' => ['nullable', 'max:25'],
+        ]);
+        
+        $paystack = app()->make('paystack.connection');
+
+        $paystackResponse = $paystack->customers()->create(
+            Request::only(['email', 'first_name', 'last_name', 'phone'])
         );
+
+        $customerRequest['paystack_customer_code'] = $paystackResponse['customer_code'];
+
+        Auth::user()->account->customers()->create($customerRequest);
 
         return Redirect::route('customers')->with('success', 'Customer created.');
     }
 
     public function edit(Customer $customer)
-    {
+    {        
         return Inertia::render('Customers/Edit', [
             'customer' => [
                 'id' => $customer->id,
                 'name' => $customer->name,
+                'first_name' => $customer->first_name,
+                'last_name' => $customer->last_name,
                 'email' => $customer->email,
                 'phone' => $customer->phone,
                 'address' => $customer->address,
@@ -59,8 +71,8 @@ class CustomersController extends Controller
                 'country' => $customer->country,
                 'postal_code' => $customer->postal_code,
                 'deleted_at' => $customer->deleted_at,
-                'contacts' => $customer->contacts()->orderByName()->get()->map->only('id', 'name', 'city', 'phone'),
-            ],
+                'invoices' => $customer->invoices()->orderByName()->get()->map->only('id', 'invoice_id', 'amount', 'due_date'),
+            ]
         ]);
     }
 
@@ -68,8 +80,9 @@ class CustomersController extends Controller
     {
         $customer->update(
             Request::validate([
-                'name' => ['required', 'max:100'],
-                'email' => ['nullable', 'max:50', 'email'],
+                'first_name' => ['required', 'max:50'],
+                'last_name' => ['required', 'max:50'],
+                // 'email' => ['nullable', 'max:50', 'email'],
                 'phone' => ['nullable', 'max:50'],
                 'address' => ['nullable', 'max:150'],
                 'city' => ['nullable', 'max:50'],

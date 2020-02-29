@@ -7,23 +7,17 @@
     <div class="bg-white rounded shadow overflow-hidden max-w-3xl">
       <form @submit.prevent="submit">
         <div class="p-8 -mr-6 -mb-8 flex flex-wrap">
-          <text-input v-model="form.first_name" :errors="$page.errors.first_name" class="pr-6 pb-8 w-full lg:w-1/2" label="First name" />
-          <text-input v-model="form.last_name" :errors="$page.errors.last_name" class="pr-6 pb-8 w-full lg:w-1/2" label="Last name" />
+          <text-input v-model="form.amount" type="number" :errors="$page.errors.amount" class="pr-6 pb-8 w-full lg:w-1/2" label="Amount" />
+          <select-input v-model="form.currency" :errors="$page.errors.currency" class="pr-6 pb-8 w-full lg:w-1/2" label="Currency">
+            <option :value="null" />
+            <option value="NGN">Naira</option>
+          </select-input>
           <select-input v-model="form.customer_id" :errors="$page.errors.customer_id" class="pr-6 pb-8 w-full lg:w-1/2" label="Customer">
             <option :value="null" />
             <option v-for="customer in customers" :key="customer.id" :value="customer.id">{{ customer.name }}</option>
           </select-input>
-          <text-input v-model="form.email" :errors="$page.errors.email" class="pr-6 pb-8 w-full lg:w-1/2" label="Email" />
-          <text-input v-model="form.phone" :errors="$page.errors.phone" class="pr-6 pb-8 w-full lg:w-1/2" label="Phone" />
-          <text-input v-model="form.address" :errors="$page.errors.address" class="pr-6 pb-8 w-full lg:w-1/2" label="Address" />
-          <text-input v-model="form.city" :errors="$page.errors.city" class="pr-6 pb-8 w-full lg:w-1/2" label="City" />
-          <text-input v-model="form.region" :errors="$page.errors.region" class="pr-6 pb-8 w-full lg:w-1/2" label="Province/State" />
-          <select-input v-model="form.country" :errors="$page.errors.country" class="pr-6 pb-8 w-full lg:w-1/2" label="Country">
-            <option :value="null" />
-            <option value="CA">Canada</option>
-            <option value="US">United States</option>
-          </select-input>
-          <text-input v-model="form.postal_code" :errors="$page.errors.postal_code" class="pr-6 pb-8 w-full lg:w-1/2" label="Postal code" />
+          <text-input v-model="form.due_date" type="date" :errors="$page.errors.due_date" class="pr-6 pb-8 w-full lg:w-1/2" label="Due Date" />
+          <textarea-input v-model="form.description" :errors="$page.errors.description" class="pr-6 pb-8 w-full" label="Description" />
         </div>
         <div class="px-8 py-4 bg-gray-100 border-t border-gray-200 flex justify-end items-center">
           <loading-button :loading="sending" class="btn-indigo" type="submit">Create Invoice</loading-button>
@@ -38,12 +32,14 @@ import Layout from '@/Shared/Layout'
 import LoadingButton from '@/Shared/LoadingButton'
 import SelectInput from '@/Shared/SelectInput'
 import TextInput from '@/Shared/TextInput'
+import TextareaInput from '@/Shared/TextareaInput'
 
 export default {
   metaInfo: { title: 'Create Invoice' },
   layout: Layout,
   components: {
     LoadingButton,
+    TextareaInput,
     SelectInput,
     TextInput,
   },
@@ -55,16 +51,11 @@ export default {
     return {
       sending: false,
       form: {
-        first_name: null,
-        last_name: null,
         customer_id: null,
-        email: null,
-        phone: null,
-        address: null,
-        city: null,
-        region: null,
-        country: null,
-        postal_code: null,
+        amount: null,
+        description: null,
+        currency: null,
+        due_date: null,
       },
     }
   },

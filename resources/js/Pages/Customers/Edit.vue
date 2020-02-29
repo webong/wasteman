@@ -3,7 +3,7 @@
     <h1 class="mb-8 font-bold text-3xl">
       <inertia-link class="text-indigo-400 hover:text-indigo-600" :href="route('customers')">Customers</inertia-link>
       <span class="text-indigo-400 font-medium">/</span>
-      {{ form.name }}
+      {{ form.first_name }} {{ form.last_name }}
     </h1>
     <trashed-message v-if="customer.deleted_at" class="mb-6" @restore="restore">
       This customer has been deleted.
@@ -11,16 +11,16 @@
     <div class="bg-white rounded shadow overflow-hidden max-w-3xl">
       <form @submit.prevent="submit">
         <div class="p-8 -mr-6 -mb-8 flex flex-wrap">
-          <text-input v-model="form.name" :errors="$page.errors.name" class="pr-6 pb-8 w-full lg:w-1/2" label="Name" />
-          <text-input v-model="form.email" :errors="$page.errors.email" class="pr-6 pb-8 w-full lg:w-1/2" label="Email" />
+          <text-input v-model="form.first_name" :errors="$page.errors.first_name" class="pr-6 pb-8 w-full lg:w-1/2" label="First name" />
+          <text-input v-model="form.last_name" :errors="$page.errors.last_name" class="pr-6 pb-8 w-full lg:w-1/2" label="Last name" />
+          <text-input v-model="form.email" :errors="$page.errors.email" class="pr-6 pb-8 w-full lg:w-1/2" label="Email" readonly="true" />
           <text-input v-model="form.phone" :errors="$page.errors.phone" class="pr-6 pb-8 w-full lg:w-1/2" label="Phone" />
           <text-input v-model="form.address" :errors="$page.errors.address" class="pr-6 pb-8 w-full lg:w-1/2" label="Address" />
           <text-input v-model="form.city" :errors="$page.errors.city" class="pr-6 pb-8 w-full lg:w-1/2" label="City" />
           <text-input v-model="form.region" :errors="$page.errors.region" class="pr-6 pb-8 w-full lg:w-1/2" label="Province/State" />
           <select-input v-model="form.country" :errors="$page.errors.country" class="pr-6 pb-8 w-full lg:w-1/2" label="Country">
             <option :value="null" />
-            <option value="CA">Canada</option>
-            <option value="US">United States</option>
+            <option value="NG">Nigeria</option>
           </select-input>
           <text-input v-model="form.postal_code" :errors="$page.errors.postal_code" class="pr-6 pb-8 w-full lg:w-1/2" label="Postal code" />
         </div>
@@ -30,7 +30,7 @@
         </div>
       </form>
     </div>
-    <h2 class="mt-12 font-bold text-2xl">Contacts</h2>
+    <h2 class="mt-12 font-bold text-2xl">Invoices</h2>
     <div class="mt-6 bg-white rounded shadow overflow-x-auto">
       <table class="w-full whitespace-no-wrap">
         <tr class="text-left font-bold">
@@ -38,31 +38,31 @@
           <th class="px-6 pt-6 pb-4">City</th>
           <th class="px-6 pt-6 pb-4" colspan="2">Phone</th>
         </tr>
-        <tr v-for="contact in customer.contacts" :key="contact.id" class="hover:bg-gray-100 focus-within:bg-gray-100">
+        <tr v-for="invoice in customer.invoices" :key="invoice.id" class="hover:bg-gray-100 focus-within:bg-gray-100">
           <td class="border-t">
-            <inertia-link class="px-6 py-4 flex items-center focus:text-indigo-500" :href="route('contacts.edit', contact.id)">
-              {{ contact.name }}
-              <icon v-if="contact.deleted_at" name="trash" class="flex-shrink-0 w-3 h-3 fill-gray-400 ml-2" />
+            <inertia-link class="px-6 py-4 flex items-center focus:text-indigo-500" :href="route('invoices.edit', invoice.id)">
+              {{ invoice.name }}
+              <icon v-if="invoice.deleted_at" name="trash" class="flex-shrink-0 w-3 h-3 fill-gray-400 ml-2" />
             </inertia-link>
           </td>
           <td class="border-t">
-            <inertia-link class="px-6 py-4 flex items-center" :href="route('contacts.edit', contact.id)" tabindex="-1">
-              {{ contact.city }}
+            <inertia-link class="px-6 py-4 flex items-center" :href="route('invoices.edit', invoice.id)" tabindex="-1">
+              {{ invoice.city }}
             </inertia-link>
           </td>
           <td class="border-t">
-            <inertia-link class="px-6 py-4 flex items-center" :href="route('contacts.edit', contact.id)" tabindex="-1">
-              {{ contact.phone }}
+            <inertia-link class="px-6 py-4 flex items-center" :href="route('invoices.edit', invoice.id)" tabindex="-1">
+              {{ invoice.phone }}
             </inertia-link>
           </td>
           <td class="border-t w-px">
-            <inertia-link class="px-4 flex items-center" :href="route('contacts.edit', contact.id)" tabindex="-1">
+            <inertia-link class="px-4 flex items-center" :href="route('invoices.edit', invoice.id)" tabindex="-1">
               <icon name="cheveron-right" class="block w-6 h-6 fill-gray-400" />
             </inertia-link>
           </td>
         </tr>
-        <tr v-if="customer.contacts.length === 0">
-          <td class="border-t px-6 py-4" colspan="4">No contacts found.</td>
+        <tr v-if="customer.invoices.length === 0">
+          <td class="border-t px-6 py-4" colspan="4">No invoices found.</td>
         </tr>
       </table>
     </div>
@@ -97,7 +97,8 @@ export default {
     return {
       sending: false,
       form: {
-        name: this.customer.name,
+        first_name: this.customer.first_name,
+        last_name: this.customer.last_name,
         email: this.customer.email,
         phone: this.customer.phone,
         address: this.customer.address,
