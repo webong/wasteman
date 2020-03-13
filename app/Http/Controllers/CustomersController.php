@@ -16,7 +16,8 @@ class CustomersController extends Controller
         return Inertia::render('Customers/Index', [
             'filters' => Request::all('search', 'trashed'),
             'customers' => Auth::user()->account->customers()
-                ->orderBy('name')
+                ->orderBy('first_name')
+                ->orderBy('last_name')
                 ->filter(Request::only('search', 'trashed'))
                 ->paginate()
                 ->only('id', 'name', 'phone', 'city', 'deleted_at'),
@@ -41,7 +42,7 @@ class CustomersController extends Controller
             'country' => ['nullable', 'max:2'],
             'postal_code' => ['nullable', 'max:25'],
         ]);
-        
+
         $paystack = app()->make('paystack.connection');
 
         $paystackResponse = $paystack->customers()->create(
@@ -56,7 +57,7 @@ class CustomersController extends Controller
     }
 
     public function edit(Customer $customer)
-    {        
+    {
         return Inertia::render('Customers/Edit', [
             'customer' => [
                 'id' => $customer->id,
