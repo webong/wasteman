@@ -59,7 +59,7 @@
     },
     "scripts": {
         "compile": [
-            "npm run prod",
+            "npm run prod"
         ],
         "reseed": [
             "@php artisan migrate:fresh",
