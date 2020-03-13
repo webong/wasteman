@@ -72,7 +72,7 @@ class CustomersController extends Controller
                 'country' => $customer->country,
                 'postal_code' => $customer->postal_code,
                 'deleted_at' => $customer->deleted_at,
-                'invoices' => $customer->invoices()->orderByName()->get()->map->only('id', 'invoice_id', 'amount', 'due_date'),
+                'invoices' => $customer->invoices()->get()->map->only('id', 'invoice_id', 'amount', 'due_date'),
             ]
         ]);
     }
