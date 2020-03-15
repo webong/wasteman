@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\Facades\Event;
 use Illuminate\Auth\Events\Registered;
+use Xeviant\Paystack\Contract\PaystackEventType;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
@@ -17,6 +18,9 @@ class EventServiceProvider extends ServiceProvider
     protected $listen = [
         Registered::class => [
             SendEmailVerificationNotification::class,
+        ],
+        PaystackEventType::PAYMENT_REQUEST_SUCCESS => [
+            'App\Listeners\UpdateInvoice',
         ],
     ];
 

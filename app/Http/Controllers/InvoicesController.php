@@ -5,11 +5,11 @@ namespace App\Http\Controllers;
 use App\Customer;
 use App\Invoice;
 use Carbon\Carbon;
+use Inertia\Inertia;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
-use Illuminate\Validation\Rule;
-use Inertia\Inertia;
 
 class InvoicesController extends Controller
 {
@@ -19,7 +19,7 @@ class InvoicesController extends Controller
             'filters' => Request::all('search', 'trashed'),
             'invoices' => Auth::user()->account->invoices()
                 ->with('customer')
-                ->orderByName()
+                ->orderBy('created_at', 'desc')
                 ->filter(Request::only('search', 'trashed'))
                 ->paginate()
                 ->transform(function ($invoice) {
@@ -38,10 +38,11 @@ class InvoicesController extends Controller
     public function create()
     {
         return Inertia::render('Invoices/Create', [
+            'date' => Carbon::now(),
             'customers' => Auth::user()->account
                 ->customers()
-                ->orderBy('name')
                 ->get()
+                ->sortBy('name')
                 ->map
                 ->only('id', 'name'),
         ]);
@@ -54,9 +55,11 @@ class InvoicesController extends Controller
             'currency' => ['required'],
             'due_date' => ['required', 'date', 'after_or_equal:today'],
             'description' => ['nullable', 'max:250'],
-            'customer_id' => ['required', Rule::exists('customers', 'id')->where(function ($query) {
-                $query->where('account_id', Auth::user()->account_id);
-            })],
+            'customer_id' => ['required', Rule::exists('customers', 'id')
+                ->where(function ($query) {
+                    $query->where('account_id', Auth::user()->account_id);
+                })
+            ],
         ]);
 
         $customer = Customer::findorFail($invoiceRequest['customer_id']);
@@ -68,8 +71,11 @@ class InvoicesController extends Controller
             'amount' => intval($invoiceRequest['amount'] * 100),
             'description' => $invoiceRequest['description'],
             'due_date' => Carbon::parse($invoiceRequest['due_date'])->toIso8601String(),
+            'has_invoice' => true,
+            'send_notification' => true,
+            'draft' => false,
         ]);
-        
+
         $invoiceRequest['paid'] = $paystackResponse['paid'];
         $invoiceRequest['status'] = $paystackResponse['status'];
         $invoiceRequest['paystack_invoice_id'] = $paystackResponse['id'];
@@ -97,8 +103,8 @@ class InvoicesController extends Controller
                 'deleted_at' => $invoice->deleted_at,
             ],
             'customers' => Auth::user()->account->customers()
-                ->orderBy('name')
                 ->get()
+                ->sortBy('name')
                 ->map
                 ->only('id', 'name'),
         ]);
