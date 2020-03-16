@@ -76,10 +76,8 @@ class InvoicesController extends Controller
             'draft' => false,
         ]);
 
-        dd($paystackResponse);
-
-        $invoiceRequest['paid'] = $paystackResponse['paid'] ?? null;
-        $invoiceRequest['status'] = $paystackResponse['status'] ?? null;
+        $invoiceRequest['paid'] = $paystackResponse['paid'];
+        $invoiceRequest['status'] = $paystackResponse['status'];
         $invoiceRequest['paystack_invoice_id'] = $paystackResponse['id'];
         $invoiceRequest['paystack_invoice_code'] = $paystackResponse['request_code'];
 
