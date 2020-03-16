@@ -71,13 +71,13 @@ class InvoicesController extends Controller
             'amount' => intval($invoiceRequest['amount'] * 100),
             'description' => $invoiceRequest['description'],
             'due_date' => Carbon::parse($invoiceRequest['due_date'])->toIso8601String(),
-            'has_invoice' => true,
+//            'has_invoice' => true,
             'send_notification' => true,
             'draft' => false,
         ]);
 
-        $invoiceRequest['paid'] = $paystackResponse['paid'];
-        $invoiceRequest['status'] = $paystackResponse['status'];
+        $invoiceRequest['paid'] = $paystackResponse['paid'] ?? null;
+        $invoiceRequest['status'] = $paystackResponse['status'] ?? null;
         $invoiceRequest['paystack_invoice_id'] = $paystackResponse['id'];
         $invoiceRequest['paystack_invoice_code'] = $paystackResponse['request_code'];
 
