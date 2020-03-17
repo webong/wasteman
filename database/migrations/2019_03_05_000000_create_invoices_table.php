@@ -15,11 +15,11 @@ class CreateInvoicesTable extends Migration
             $table->decimal('amount');
             $table->decimal('pending_amount')->nullable();
             $table->string('currency');
+            $table->string('status');
+            $table->boolean('paid');
             $table->text('description')->nullable();
             $table->date('due_date')->nullable();
             $table->dateTime('paid_at')->nullable();
-            $table->string('status');
-            $table->boolean('paid');
             $table->string('paystack_invoice_id');
             $table->string('paystack_invoice_code');
             $table->timestamps();
