@@ -25,7 +25,7 @@ class UpdateInvoice implements ShouldQueue
 
         $invoice = Invoice::where('paystack_invoice_id', $paystackPayload->id)->first();
         $invoice->status = $paystackPayload->status;
-        $invoice->paid_at = Carbon::parse($paystackPayload->paid_at)->toDateTime();
+        $invoice->paid_at = Carbon::parse($paystackPayload->paid_at)->toDate();
         $invoice->paid = $paystackPayload->paid;
         $invoice->save();
     }

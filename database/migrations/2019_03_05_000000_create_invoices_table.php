@@ -17,7 +17,7 @@ class CreateInvoicesTable extends Migration
             $table->string('currency');
             $table->text('description')->nullable();
             $table->date('due_date')->nullable();
-            $table->date('paid_at')->nullable();
+            $table->dateTime('paid_at')->nullable();
             $table->string('status');
             $table->boolean('paid');
             $table->string('paystack_invoice_id');
