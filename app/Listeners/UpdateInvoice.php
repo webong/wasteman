@@ -9,8 +9,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Xeviant\LaravelPaystack\Model\PaystackEvent;
 
-
-class UpdateInvoice
+class UpdateInvoice implements ShouldQueue
 {
     /**
      * Handle the event.
@@ -29,6 +28,5 @@ class UpdateInvoice
         $invoice->paid_at = Carbon::parse($paystackPayload->paid_at)->toDateTime();
         $invoice->paid = $paystackPayload->paid;
         $invoice->save();
-        dump($invoice);
     }
 }
