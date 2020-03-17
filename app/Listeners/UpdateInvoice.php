@@ -26,7 +26,7 @@ class UpdateInvoice
 
         $invoice = Invoice::where('paystack_invoice_id', $paystackPayload->id)->first();
         $invoice->status = $paystackPayload->status;
-        $invoice->paid_at = $paystackPayload->paid_at; // Carbon::parse($paystackPayload->paid_at)->toDateTime();
+        $invoice->paid_at = Carbon::parse($paystackPayload->paid_at)->toDateTime();
         $invoice->paid = $paystackPayload->paid;
         $invoice->save();
         dump($invoice);
