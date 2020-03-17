@@ -34,27 +34,42 @@
     <div class="mt-6 bg-white rounded shadow overflow-x-auto">
       <table class="w-full whitespace-no-wrap">
         <tr class="text-left font-bold">
-          <th class="px-6 pt-6 pb-4">Name</th>
-          <th class="px-6 pt-6 pb-4">City</th>
-          <th class="px-6 pt-6 pb-4" colspan="2">Phone</th>
+            <th class="px-6 pt-6 pb-4">Id</th>
+            <th class="px-6 pt-6 pb-4">Amount</th>
+            <th class="px-6 pt-6 pb-4">Status</th>
+            <th class="px-6 pt-6 pb-4">Due Date</th>
+            <th class="px-6 pt-6 pb-4" colspan="2">Paid Date</th>
         </tr>
         <tr v-for="invoice in customer.invoices" :key="invoice.id" class="hover:bg-gray-100 focus-within:bg-gray-100">
           <td class="border-t">
             <inertia-link class="px-6 py-4 flex items-center focus:text-indigo-500" :href="route('invoices.edit', invoice.id)">
-              {{ invoice.name }}
+              {{ invoice.paystack_invoice_id }}
               <icon v-if="invoice.deleted_at" name="trash" class="flex-shrink-0 w-3 h-3 fill-gray-400 ml-2" />
             </inertia-link>
           </td>
           <td class="border-t">
             <inertia-link class="px-6 py-4 flex items-center" :href="route('invoices.edit', invoice.id)" tabindex="-1">
-              {{ invoice.city }}
+              {{ invoice.amount }}
             </inertia-link>
           </td>
-          <td class="border-t">
-            <inertia-link class="px-6 py-4 flex items-center" :href="route('invoices.edit', invoice.id)" tabindex="-1">
-              {{ invoice.phone }}
-            </inertia-link>
-          </td>
+            <td class="border-t">
+                <inertia-link class="px-6 py-4 flex items-center" :href="route('invoices.edit', invoice.id)"
+                              tabindex="-1">
+                    {{ invoice.status }}
+                </inertia-link>
+            </td>
+            <td class="border-t">
+                <inertia-link class="px-6 py-4 flex items-center" :href="route('invoices.edit', invoice.id)"
+                              tabindex="-1">
+                    {{ invoice.due_date }}
+                </inertia-link>
+            </td>
+            <td class="border-t">
+                <inertia-link class="px-6 py-4 flex items-center" :href="route('invoices.edit', invoice.id)"
+                              tabindex="-1">
+                    {{ invoice.paid_at }}
+                </inertia-link>
+            </td>
           <td class="border-t w-px">
             <inertia-link class="px-4 flex items-center" :href="route('invoices.edit', invoice.id)" tabindex="-1">
               <icon name="cheveron-right" class="block w-6 h-6 fill-gray-400" />

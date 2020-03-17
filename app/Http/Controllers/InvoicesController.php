@@ -26,9 +26,11 @@ class InvoicesController extends Controller
                     return [
                         'id' => $invoice->id,
                         'customer' => $invoice->customer ? $invoice->customer->only('name') : null,
-                        'paystack_invoice_id' => $invoice->paystack_invoice_id,
-                        'due_date' => Carbon::parse($invoice->due_date)->diffForHumans(),
                         'amount' => $invoice->amount,
+                        'status' => $invoice->status,
+                        'due_date' => Carbon::parse($invoice->due_date)->diffForHumans(),
+                        'paid_at' => isset($invoice->paid_at) ? Carbon::parse($invoice->paid_at)->diffForHumans() : 'Not Paid',
+                        'paystack_invoice_id' => $invoice->paystack_invoice_id,
                         'deleted_at' => $invoice->deleted_at,
                     ];
                 }),

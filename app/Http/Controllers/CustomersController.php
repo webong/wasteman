@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use Inertia\Inertia;
 use App\Customer;
 use Illuminate\Support\Facades\Auth;
@@ -29,9 +30,9 @@ class CustomersController extends Controller
         return Inertia::render('Customers/Create');
     }
 
-    public function store(Paystack $paystack)
+    public function store()
     {
-       $customerRequest = Request::validate([
+        $customerRequest = Request::validate([
             'first_name' => ['required', 'max:50'],
             'last_name' => ['required', 'max:50'],
             'email' => ['nullable', 'max:50', 'email'],
@@ -72,7 +73,18 @@ class CustomersController extends Controller
                 'country' => $customer->country,
                 'postal_code' => $customer->postal_code,
                 'deleted_at' => $customer->deleted_at,
-                'invoices' => $customer->invoices()->get()->map->only('id', 'invoice_id', 'amount', 'due_date'),
+                'invoices' => $customer->invoices()->get()->transform(function ($invoice) {
+                    return [
+                        'id' => $invoice->id,
+                        'customer' => $invoice->customer ? $invoice->customer->only('name') : null,
+                        'amount' => $invoice->amount,
+                        'status' => $invoice->status,
+                        'due_date' => Carbon::parse($invoice->due_date)->diffForHumans(),
+                        'paid_at' => isset($invoice->paid_at) ? Carbon::parse($invoice->paid_at)->diffForHumans() : 'Not Paid',
+                        'paystack_invoice_id' => $invoice->paystack_invoice_id,
+                        'deleted_at' => $invoice->deleted_at,
+                    ];
+                }),
             ]
         ]);
     }

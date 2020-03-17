@@ -2,23 +2,16 @@
 
 namespace App\Listeners;
 
+use App\Invoice;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Xeviant\LaravelPaystack\Model\PaystackEvent;
 
+
 class UpdateInvoice
 {
-    /**
-     * Create the event listener.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        //
-    }
-
     /**
      * Handle the event.
      *
@@ -27,8 +20,15 @@ class UpdateInvoice
      */
     public function handle(PaystackEvent $event)
     {
-        $paystackPayload = $event->payload;
-        dump($paystackPayload);
-        // Do something
+        if (!empty($event->payload)) {
+            $paystackPayload = $event->payload;
+        }
+
+        $invoice = Invoice::where('paystack_invoice_id', $paystackPayload->id)->first();
+        $invoice->status = $paystackPayload->status;
+        $invoice->paid_at = $paystackPayload->paid_at; // Carbon::parse($paystackPayload->paid_at)->toDateTime();
+        $invoice->paid = $paystackPayload->paid;
+        $invoice->save();
+        dump($invoice);
     }
 }
