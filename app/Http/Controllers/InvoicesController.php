@@ -78,7 +78,7 @@ class InvoicesController extends Controller
             'draft' => false,
         ]);
 
-        if($paystackResponse['status'] == false) {
+        if(isset($paystackResponse['status']) && $paystackResponse['status'] == false) {
             return back()->with('error', $paystackResponse['message']);
         }
 

@@ -51,7 +51,7 @@ class CustomersController extends Controller
             Request::only(['email', 'first_name', 'last_name', 'phone'])
         );
 
-        if($paystackResponse['status'] == false) {
+        if(isset($paystackResponse['status']) && $paystackResponse['status'] == false) {
             return back()->with('error', $paystackResponse['message']);
         }
 
