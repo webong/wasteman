@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use App\Customer;
 use Illuminate\Support\Facades\Auth;
@@ -49,6 +50,10 @@ class CustomersController extends Controller
         $paystackResponse = $paystack->customers()->create(
             Request::only(['email', 'first_name', 'last_name', 'phone'])
         );
+
+        if($paystackResponse['status'] == false) {
+            return back()->with('error', $paystackResponse['message']);
+        }
 
         $customerRequest['paystack_customer_code'] = $paystackResponse['customer_code'];
 

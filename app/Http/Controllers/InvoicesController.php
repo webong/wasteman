@@ -78,6 +78,10 @@ class InvoicesController extends Controller
             'draft' => false,
         ]);
 
+        if($paystackResponse['status'] == false) {
+            return back()->with('error', $paystackResponse['message']);
+        }
+
         $invoiceRequest['paid'] = $paystackResponse['paid'];
         $invoiceRequest['status'] = $paystackResponse['status'];
         $invoiceRequest['paystack_invoice_id'] = $paystackResponse['id'];
